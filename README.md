@@ -1,5 +1,5 @@
 # Arrows
-Arrow Keyboard Movement is a simple plugin for keyboard navigation of elements on a webpage. With this plugin, users can easily move focus to different elements on a page using the arrow keys on their keyboard. This makes navigation smoother and more convenient, especially for users with disabilities who may find it difficult to use a mouse or trackpad.
+Arrow Keyboard Movement is a simple plugin for wordpress for keyboard navigation of elements on a webpage. With this plugin, users can easily move focus to different elements on a page using the arrow keys on their keyboard. This makes navigation smoother and more convenient, especially for users with disabilities who may find it difficult to use a mouse or trackpad.
 
 This plugin was generated entirely using OpenAI's ChatGPT language model and is designed to be lightweight and easy to use. Simply include the script in your webpage and activate the plugin to start using it.
 
