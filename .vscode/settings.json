@@ -1,0 +1,6 @@
+{
+    "chatgpt.apiKey": "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",
+    "chatgpt.timeoutLength": 20,
+    "chatgpt.selectedInsideCodeblock": false,
+    "codegpt.apiKey": "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"
+}
