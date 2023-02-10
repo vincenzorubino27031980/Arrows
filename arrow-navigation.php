@@ -4,7 +4,7 @@
  * Plugin URI: https://www.cuttalo.com/
    Description: Questo plugin permette di spostarsi tra le pagine, articoli e prodotti sul sito utilizzando le frecce della tastiera.
    Author: Cuttalo srl
- * Version: 1.0.3
+ * Version: 1.0.1
  * GitHub Plugin URI: vincenzorubino27031980/Arrows-plugin-wordpress
 
 */
@@ -12,14 +12,14 @@
 function spostamento_tastiera()
 {
    //escludi l'accesso per gli utenti non amministratori
-   if (!current_user_can('manage_options')) {
-      return;
+   if (!current_user_can('manage_options')) {//se l'utente non è amministratore
+      return;//ritorna
    }
    // Recupera tutte le pagine, articoli e prodotti sul sito
-   $posts = [];
-   $args = array(
-      'post_type' => array('page', 'post', 'product'),
-      'posts_per_page' => -1
+   $posts = [];//array vuoto
+   $args = array(//array di parametri per la query
+      'post_type' => array('page', 'post', 'product'),//recupera i post di tipo page, post e product
+      'posts_per_page' => -1//recupera tutti i post
    );
    $query = new WP_Query($args);//esegue la query
    while ($query->have_posts()) {//se ci sono post da mostrare
@@ -30,45 +30,44 @@ function spostamento_tastiera()
          'url' => get_the_permalink()//recupera l'url del post
       );
    }
-   wp_reset_postdata();
+   wp_reset_postdata();//resetta la query
 
    // Ordina i post in base al loro tipo e titolo (PHP 7+)
    usort($posts, function($a, $b) {
-      if ($a['tipo'] == $b['tipo']) {
-         return $a['titolo'] <=> $b['titolo'];
-      } else if ($a['tipo'] == 'post') {
+      if ($a['tipo'] == $b['tipo']) {//se il tipo di post è uguale al tipo di post successivo
+         return $a['titolo'] <=> $b['titolo'];//ritorna il titolo del post corrente
+      } else if ($a['tipo'] == 'post') {//se il tipo di post è post
+         return -1;//ritorna -1
+      } else if ($a['tipo'] == 'page' && $b['tipo'] == 'product') {//se il tipo di post è page e il tipo di post successivo è product
          return -1;
-      } else if ($a['tipo'] == 'page' && $b['tipo'] == 'product') {
-         return -1;
-      } else {
-         return 1;
+      } else {//altrimenti
+         return 1;//ritorna 1
       }
    });
 
    // Identifica il post corrente
-   $url_corrente = $_SERVER['REQUEST_URI'];
-   $post_corrente = null;
-   foreach ($posts as $post) {
-      if ($post['url'] == $url_corrente) {
-         $post_corrente = $post;
-         break;
+   $url_corrente = $_SERVER['REQUEST_URI'];//recupera l'url della pagina corrente
+   $post_corrente = null;//post corrente
+   foreach ($posts as $post) {//scorre tutti i post
+      if ($post['url'] == $url_corrente) {//se l'url del post corrente è uguale all'url della pagina corrente
+         $post_corrente = $post;//assegna il post corrente
+         break;//interrompe il ciclo
       }
    }
 
    // Identifica il post precedente
-   $post_precedente = null;
-   $post_successivo = null;
-   if ($post_corrente) {
-      $index = array_search($post_corrente, $posts);
-      if ($index > 0) {
-         $post_precedente = $posts[$index - 1];
-      }
-      if ($index < count($posts) - 1) {
-         $post_successivo = $posts[$index + 1];
-      }
+   $post_precedente = null;//post precedente
+   $post_successivo = null;//post successivo
+   if ($post_corrente) {//se il post corrente esiste
+      $index = array_search($post_corrente, $posts);//recupera l'indice del post corrente
+      if ($index > 0) {//se l'indice è maggiore di 0
+         $post_precedente = $posts[$index - 1];//assegna il post precedente
+      }//altrimenti
+      if ($index < count($posts) - 1) {//se l'indice è minore del numero di post - 1
+         $post_successivo = $posts[$index + 1];//assegna il post successivo
+      }//altrimenti
    }
    ?>
-   
    <script type="text/javascript">
       jQuery(document).ready(function($) {
          $(document).keydown(function(e) {
@@ -154,33 +153,33 @@ function spostamento_tastiera()
          ?>
 
          // Ordina i post in base al loro tipo e titolo
-                  posts.sort(function(a, b) {
-            if (a.tipo == b.tipo) {
-               return a.titolo.localeCompare(b.titolo);
-            } else if (a.tipo == 'post') {
-               return -1;
-            } else if (a.tipo == 'page' && b.tipo == 'product') {
-               return -1;
-            } else {
-               return 1;
-            }
+                  posts.sort(function(a, b) {//ordina i post in base al loro tipo e titolo
+            if (a.tipo == b.tipo) {//se il tipo di post è uguale al tipo di post successivo
+               return a.titolo.localeCompare(b.titolo);//ritorna il titolo del post corrente
+            } else if (a.tipo == 'post') {//se il tipo di post è post
+               return -1;//ritorna -1
+            } else if (a.tipo == 'page' && b.tipo == 'product') {//se il tipo di post è page e il tipo di post successivo è product
+               return -1;//ritorna -1
+            } else {//altrimenti
+               return 1;//ritorna 1
+            }//fine if
            
          });
          
       
          // Identifica il post corrente
-         var url_corrente = window.location.href;
-         for (var i = 0; i < posts.length; i++) {
-            if (posts[i].url == url_corrente) {
-               if (i < posts.length - 1) {
-                  return posts[i + 1];
-               } else {
-                  return null;
-               }
+         var url_corrente = window.location.href;//recupera l'url della pagina corrente
+         for (var i = 0; i < posts.length; i++) {//scorre tutti i post
+            if (posts[i].url == url_corrente) {//se l'url del post corrente è uguale all'url della pagina corrente
+               if (i < posts.length - 1) {//se l'indice è minore del numero di post - 1
+                  return posts[i + 1];//restituisce il post successivo
+               } else {//altrimenti
+                  return null;//restituisce null //non ci sono post successivi
+               }//fine if
             }
          }
 
-         return null;
+         return null;//restituisce null//non ci sono post successivi//non è stato trovato il post corrente
       }
    </script>
    <?php
