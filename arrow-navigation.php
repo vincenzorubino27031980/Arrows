@@ -4,7 +4,7 @@
  * Plugin URI: https://www.cuttalo.com/
    Description: Questo plugin permette di spostarsi tra le pagine, articoli e prodotti sul sito utilizzando le frecce della tastiera.
    Author: Cuttalo srl
- * Version: 1.0.1
+ * Version: 1.0.3
  * GitHub Plugin URI: vincenzorubino27031980/Arrows-plugin-wordpress
 
 */
@@ -21,18 +21,18 @@ function spostamento_tastiera()
       'post_type' => array('page', 'post', 'product'),
       'posts_per_page' => -1
    );
-   $query = new WP_Query($args);
-   while ($query->have_posts()) {
-      $query->the_post();
-      $posts[] = array(
-         'tipo' => get_post_type(),
-         'titolo' => get_the_title(),
-         'url' => get_the_permalink()
+   $query = new WP_Query($args);//esegue la query
+   while ($query->have_posts()) {//se ci sono post da mostrare
+      $query->the_post();//mostra il post corrente 
+      $posts[] = array(//aggiunge un elemento all'array
+         'tipo' => get_post_type(),//recupera il tipo di post  
+         'titolo' => get_the_title(),//recupera il titolo del post
+         'url' => get_the_permalink()//recupera l'url del post
       );
    }
    wp_reset_postdata();
 
-   // Ordina i post in base al loro tipo e titolo ed escludi l'accesso per gli utenti non amministratori
+   // Ordina i post in base al loro tipo e titolo (PHP 7+)
    usort($posts, function($a, $b) {
       if ($a['tipo'] == $b['tipo']) {
          return $a['titolo'] <=> $b['titolo'];
@@ -68,6 +68,7 @@ function spostamento_tastiera()
       }
    }
    ?>
+   
    <script type="text/javascript">
       jQuery(document).ready(function($) {
          $(document).keydown(function(e) {
@@ -115,23 +116,24 @@ function spostamento_tastiera()
          });
 
          // Identifica il post corrente
-         var url_corrente = window.location.href;
-         for (var i = 0; i < posts.length; i++) {
-            if (posts[i].url == url_corrente) {
-               if (i > 0) {
-                  return posts[i - 1];
-               } else {
-                  return null;
-               }
+         var url_corrente = window.location.href;//recupera l'url della pagina corrente
+         for (var i = 0; i < posts.length; i++) {//scorre tutti i post
+            if (posts[i].url == url_corrente) {//se l'url del post corrente è uguale all'url della pagina corrente
+            
+               if (i > 0) {//se l'indice è maggiore di 0
+                  return posts[i - 1];//restituisce il post precedente
+               } else {//altrimenti
+                  return null;//restituisce null //non ci sono post precedenti
+               }     //
             }
          }
 
-         return null;
+         return null;//restituisce null//non ci sono post precedenti//non è stato trovato il post corrente
       } 
 
-      function getPostSuccessivo() {
+      function getPostSuccessivo() {//funzione per recuperare il post successivo
          // Recupera tutte le pagine, articoli e prodotti sul sito
-         var posts = [];
+         var posts = [];//crea un array vuoto
          <?php
             $args = array(
                'post_type' => array('page', 'post', 'product'),
@@ -183,4 +185,5 @@ function spostamento_tastiera()
    </script>
    <?php
 }
+
 add_action( 'wp_footer', 'spostamento_tastiera' );
